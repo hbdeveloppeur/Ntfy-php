@@ -1,5 +1,5 @@
 {
-    "name": "hb/notify",
+    "name": "x00/notify",
     "description": "Simple clean-architecture library for notifying via ntfy.sh",
     "type": "library",
     "autoload": {
