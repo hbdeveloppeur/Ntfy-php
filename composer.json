@@ -13,7 +13,7 @@
         "ext-curl": "*",
         "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
-        "symfony/config": "^8.0",
-        "symfony/yaml": "^8.0"
+        "symfony/config": "^5.4 || ^6.0 || ^7.0",
+        "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
     }
 }
