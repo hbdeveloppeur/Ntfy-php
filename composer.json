@@ -1,0 +1,14 @@
+{
+    "name": "hb/notify",
+    "description": "Simple clean-architecture library for notifying via ntfy.sh",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Notify\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*"
+    }
+}
