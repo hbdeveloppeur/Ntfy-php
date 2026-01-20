@@ -1,0 +1,7 @@
+services:
+    Notify\Adapters\NtfyNotifier:
+        autowire: true
+        autoconfigure: true
+
+    Notify\Core\Notifier:
+        alias: Notify\Adapters\NtfyNotifier

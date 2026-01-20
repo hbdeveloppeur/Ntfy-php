@@ -1,0 +1,4 @@
+ntfy:
+    channels:
+        error: 'your_error_channel_id'
+        log: 'your_log_channel_id'

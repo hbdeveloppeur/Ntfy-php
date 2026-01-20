@@ -6,15 +6,21 @@ use Notify\Adapters\NtfyNotifier;
 use Notify\Core\Exception\NotificationException;
 
 try {
-    $notifier = new NtfyNotifier();
-
     // Replace 'test_channel' with your actual ntfy.sh channel
-    $channel = 'test_channel_' . bin2hex(random_bytes(4));
-    echo "Sending notification to channel: $channel\n";
-
-    $notifier->notify($channel, 'Hello from Notify Library with Exceptions!');
+    $errorChannel = 'test_channel_error_' . bin2hex(random_bytes(4));
+    $logChannel = 'test_channel_log_' . bin2hex(random_bytes(4));
     
-    echo "Notification sent successfully! Check https://ntfy.sh/$channel\n";
+    echo "Error Channel: $errorChannel\n";
+    echo "Log Channel: $logChannel\n";
+
+    $notifier = new NtfyNotifier($errorChannel, $logChannel);
+
+    $notifier->log('This is a log message from Notify Library.');
+    $notifier->error('This is an error message from Notify Library.');
+    
+    echo "Notifications sent successfully!\n";
+    echo "Check https://ntfy.sh/$errorChannel\n";
+    echo "Check https://ntfy.sh/$logChannel\n";
 
 } catch (NotificationException $e) {
     echo "Error sending notification: " . $e->getMessage() . "\n";

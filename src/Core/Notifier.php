@@ -8,14 +8,24 @@ use Notify\Core\Exception\NotificationException;
 interface Notifier
 {
     /**
-     * Send a notification message to a channel.
+     * Send an error notification.
      *
-     * @param string $channelId The unique identifier for the channel.
-     * @param string $message   The message content to send.
+     * @param string $message The error message content.
      *
      * @return void
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function notify(string $channelId, string $message): void;
+    public function error(string $message): void;
+
+    /**
+     * Send a log notification.
+     *
+     * @param string $message The log message content.
+     *
+     * @return void
+     *
+     * @throws NotificationException If the notification fails to send.
+     */
+    public function log(string $message): void;
 }

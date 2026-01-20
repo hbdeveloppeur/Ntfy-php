@@ -20,7 +20,51 @@ class NtfyNotifier implements Notifier
      *
      * @throws NotificationException If the notification fails (curl error or non-200 response).
      */
-    public function notify(string $channelId, string $message): void
+    private string $errorChannelId;
+    private string $logChannelId;
+
+    /**
+     * @param string $errorChannelId The channel ID for error notifications.
+     * @param string $logChannelId   The channel ID for log notifications.
+     */
+    public function __construct(string $errorChannelId, string $logChannelId)
+    {
+        $this->errorChannelId = $errorChannelId;
+        $this->logChannelId = $logChannelId;
+    }
+
+    /**
+     * Send an error notification.
+     *
+     * @param string $message The error message content.
+     *
+     * @throws NotificationException
+     */
+    public function error(string $message): void
+    {
+        $this->send($this->errorChannelId, $message);
+    }
+
+    /**
+     * Send a log notification.
+     *
+     * @param string $message The log message content.
+     *
+     * @throws NotificationException
+     */
+    public function log(string $message): void
+    {
+        $this->send($this->logChannelId, $message);
+    }
+
+    /**
+     * Internal helper to send the notification via cURL.
+     *
+     * @param string $channelId
+     * @param string $message
+     * @throws NotificationException
+     */
+    private function send(string $channelId, string $message): void
     {
         $url = "https://ntfy.sh/" . urlencode($channelId);
         $ch = curl_init($url);
