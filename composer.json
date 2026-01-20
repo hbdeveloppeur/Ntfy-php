@@ -1,5 +1,5 @@
 {
-    "name": "x00/notify",
+    "name": "x00/ntfy-php",
     "description": "Simple clean-architecture library for notifying via ntfy.sh",
     "type": "library",
     "autoload": {
