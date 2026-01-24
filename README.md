@@ -1,6 +1,6 @@
 # Notify via Ntfy.sh (PHP Library)
 
-A simple, clean-architecture PHP library for sending notifications via [ntfy.sh](https://ntfy.sh).
+Send notifications to your phone in one line via [ntfy.sh](https://ntfy.sh).
 
 ## Installation
 
