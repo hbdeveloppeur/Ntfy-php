@@ -36,16 +36,15 @@ class NtfyNotifier implements Notifier
     /**
      * Send an error notification.
      *
-     * @param string $action  The action name.
-     * @param string $message The error message content.
+     * @param string $actionName The action name.
      * @param \Throwable|null $exception The exception that occurred.
      * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function error(string $action = "", string $message, ?\Throwable $exception = null, array $data = []): void
+    public function error(string $actionName, ?\Throwable $exception = null, array $data = []): void
     {
-        $message = "Error while doing action: " .$action . "\n" . $message;
+        $message = "Error while doing action: " .$actionName;
 
         if ($exception !== null) {
             $message .= "\n\nException: " . $exception->getMessage();
@@ -63,13 +62,16 @@ class NtfyNotifier implements Notifier
     /**
      * Send a log notification.
      *
+     * @param string $actionName The action name.
      * @param string $message The log message content.
      * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function log(string $message, array $data = []): void
+    public function log(string $actionName, string $message, array $data = []): void
     {
+        $message = "Log: " . $actionName . "\n" . $message;
+
         if (!empty($data)) {
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
