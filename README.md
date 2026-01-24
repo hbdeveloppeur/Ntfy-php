@@ -54,7 +54,12 @@ class MyService
         try {
             // ...
         } catch (\Exception $e) {
-            $this->notifier->error(action: '<Description of the action>', message: '<The message>', exception: $e);
+            $this->notifier->error(
+                action: '<Description of the action>',
+                message: '<The message>',
+                exception: $e,
+                data: ['user_id' => 123, 'context' => 'foo']
+            );
         }
     }
 }
@@ -63,7 +68,7 @@ class MyService
 ### Log Notifications
 
 ```php
-$this->notifier->log('Something happened');
+$this->notifier->log('Something happened', ['key' => 'value']);
 ```
 
 ## License

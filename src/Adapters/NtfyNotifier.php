@@ -39,10 +39,11 @@ class NtfyNotifier implements Notifier
      * @param string $action  The action name.
      * @param string $message The error message content.
      * @param \Throwable|null $exception The exception that occurred.
+     * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function error(string $action = "", string $message, ?\Throwable $exception = null): void
+    public function error(string $action = "", string $message, ?\Throwable $exception = null, array $data = []): void
     {
         $message = "Error while doing action: " .$action . "\n" . $message;
 
@@ -52,6 +53,10 @@ class NtfyNotifier implements Notifier
             $message .= "\nStack Trace:\n" . $exception->getTraceAsString();
         }
 
+        if (!empty($data)) {
+            $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
         $this->send($this->errorChannelId, $message);
     }
 
@@ -59,11 +64,16 @@ class NtfyNotifier implements Notifier
      * Send a log notification.
      *
      * @param string $message The log message content.
+     * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function log(string $message): void
+    public function log(string $message, array $data = []): void
     {
+        if (!empty($data)) {
+            $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
         $this->send($this->logChannelId, $message);
     }
 
