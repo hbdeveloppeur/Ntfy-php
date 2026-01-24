@@ -16,7 +16,7 @@ interface Notifier
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function error(string $message): void;
+    public function error(string $action = "", string $message): void;
 
     /**
      * Send a log notification.

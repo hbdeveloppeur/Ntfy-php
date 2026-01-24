@@ -40,8 +40,9 @@ class NtfyNotifier implements Notifier
      *
      * @throws NotificationException
      */
-    public function error(string $message): void
+    public function error(string $action = "", string $message): void
     {
+        $message = "Error while doing action: " .$action . "\n" . $message;
         $this->send($this->errorChannelId, $message);
     }
 
