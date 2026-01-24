@@ -36,13 +36,22 @@ class NtfyNotifier implements Notifier
     /**
      * Send an error notification.
      *
+     * @param string $action  The action name.
      * @param string $message The error message content.
+     * @param \Throwable|null $exception The exception that occurred.
      *
      * @throws NotificationException
      */
-    public function error(string $action = "", string $message): void
+    public function error(string $action = "", string $message, ?\Throwable $exception = null): void
     {
         $message = "Error while doing action: " .$action . "\n" . $message;
+
+        if ($exception !== null) {
+            $message .= "\n\nException: " . $exception->getMessage();
+            $message .= "\nFile: " . $exception->getFile() . ":" . $exception->getLine();
+            $message .= "\nStack Trace:\n" . $exception->getTraceAsString();
+        }
+
         $this->send($this->errorChannelId, $message);
     }
 

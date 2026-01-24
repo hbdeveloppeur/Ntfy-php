@@ -10,13 +10,15 @@ interface Notifier
     /**
      * Send an error notification.
      *
+     * @param string $action  The action name.
      * @param string $message The error message content.
+     * @param \Throwable|null $exception The exception that occurred.
      *
      * @return void
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function error(string $action = "", string $message): void;
+    public function error(string $action = "", string $message, ?\Throwable $exception = null): void;
 
     /**
      * Send a log notification.
