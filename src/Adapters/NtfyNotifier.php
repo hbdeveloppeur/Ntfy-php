@@ -23,6 +23,14 @@ class NtfyNotifier implements Notifier
     private string $errorChannelId;
     private string $logChannelId;
 
+    private string $actionDescription;
+
+
+    public function startNewAction(string $description): void
+    {
+        $this->actionDescription = $description;
+    }
+
     /**
      * @param string $errorChannelId The channel ID for error notifications.
      * @param string $logChannelId   The channel ID for log notifications.
@@ -34,17 +42,16 @@ class NtfyNotifier implements Notifier
     }
 
     /**
-     * Send an error notification.
+     * Send an exception notification.
      *
-     * @param string $actionName The action name.
      * @param \Throwable|null $exception The exception that occurred.
      * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function error(string $actionName, ?\Throwable $exception = null, array $data = []): void
+    public function exception( ?\Throwable $exception = null, array $data = []): void
     {
-        $message = "Error while doing action: " .$actionName;
+        $message = "Error while doing action: " . $this->actionDescription;
 
         if ($exception !== null) {
             $message .= "\n\nException: " . $exception->getMessage();
@@ -62,15 +69,14 @@ class NtfyNotifier implements Notifier
     /**
      * Send a log notification.
      *
-     * @param string $actionName The action name.
      * @param string $message The log message content.
      * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function log(string $actionName, string $message, array $data = []): void
+    public function log(string $message, array $data = []): void
     {
-        $message = "Log: " . $actionName . "\n" . $message;
+        $message = "Log: " . $this->actionDescription . "\n" . $message;
 
         if (!empty($data)) {
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

@@ -7,10 +7,12 @@ use Notify\Core\Exception\NotificationException;
 
 interface Notifier
 {
+
+    public function startNewAction(string $description): void;
+
     /**
-     * Send an error notification.
+     * Send an exception notification.
      *
-     * @param string $actionName The action name.
      * @param \Throwable|null $exception The exception that occurred.
      * @param array $data     Additional data to append to the message.
      *
@@ -18,12 +20,11 @@ interface Notifier
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function error(string $actionName, ?\Throwable $exception = null, array $data = []): void;
+    public function exception(?\Throwable $exception = null, array $data = []): void;
 
     /**
      * Send a log notification.
-     *
-     * @param string $actionName The action name.
+     * 
      * @param string $message The log message content.
      * @param array $data     Additional data to append to the message.
      *
@@ -31,5 +32,5 @@ interface Notifier
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function log(string $actionName, string $message, array $data = []): void;
+    public function log(string $message, array $data = []): void;
 }
