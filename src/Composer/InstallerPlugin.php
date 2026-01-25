@@ -49,11 +49,18 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
     public function onPostInstall(Event $event): void
     {
         $projectRoot = getcwd();
+        
+        $this->createConfiguration($projectRoot);
+        $this->registerBundle($projectRoot);
+    }
+
+    private function createConfiguration(string $projectRoot): void
+    {
         $configDir = $projectRoot . '/config/packages';
         $targetFile = $configDir . '/ntfy.yaml';
 
         if (!is_dir($configDir)) {
-            // Not a standard Symfony project structure, or config/packages doesn't exist
+            // Not a standard Symfony project structure
             return;
         }
 
@@ -65,7 +72,6 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
         $sourceFile = __DIR__ . '/../../config/ntfy.yaml';
         
         if (!file_exists($sourceFile)) {
-            // This should not happen if the library is correctly installed
             $this->io->write('<error>[Notify]</error> Source configuration file not found.');
             return;
         }
@@ -75,6 +81,31 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
             $this->io->write('<info>[Notify]</info> Please update your channel IDs in that file.');
         } else {
             $this->io->write('<error>[Notify]</error> Failed to create configuration file.');
+        }
+    }
+
+    private function registerBundle(string $projectRoot): void
+    {
+        $bundlesFile = $projectRoot . '/config/bundles.php';
+        
+        if (!file_exists($bundlesFile)) {
+            return;
+        }
+
+        $content = file_get_contents($bundlesFile);
+        if (strpos($content, 'Notify\NtfyBundle') !== false) {
+            return;
+        }
+
+        $newBundle = "    Notify\NtfyBundle::class => ['all' => true],\n";
+        
+        // Find the last occurrence of ];
+        $pos = strrpos($content, '];');
+        if ($pos !== false) {
+            $newContent = substr($content, 0, $pos) . $newBundle . substr($content, $pos);
+            if (file_put_contents($bundlesFile, $newContent)) {
+                $this->io->write('<info>[Notify]</info> Registered NtfyBundle in <comment>config/bundles.php</comment>');
+            }
         }
     }
 }
