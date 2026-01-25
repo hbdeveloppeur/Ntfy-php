@@ -1,7 +1,7 @@
 {
     "name": "x00/ntfy-php",
     "description": "Simple clean-architecture library for notifying via ntfy.sh",
-    "type": "library",
+    "type": "composer-plugin",
     "license": "Apache-2.0",
     "autoload": {
         "psr-4": {
@@ -11,9 +11,13 @@
     "require": {
         "php": ">=7.4",
         "ext-curl": "*",
+        "composer-plugin-api": "^2.0",
         "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
         "symfony/config": "^5.4 || ^6.0 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
+    },
+    "extra": {
+        "class": "Notify\\Composer\\InstallerPlugin"
     }
 }

@@ -26,7 +26,7 @@ class NtfyExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $definition = $container->getDefinition('Notify\Adapters\NtfyNotifier');
-        $definition->setArgument('$errorChannelId', $config['channels']['error']);
-        $definition->setArgument('$logChannelId', $config['channels']['log']);
+        $definition->setArgument('$errorChannelId', $config['channels']['error'] ?? '%env(NTFY_ERROR_CHANNEL)%');
+        $definition->setArgument('$logChannelId', $config['channels']['log'] ?? '%env(NTFY_LOG_CHANNEL)%');
     }
 }

@@ -10,12 +10,16 @@ Install the package via Composer:
 composer require x00/ntfy-php
 ```
 
+> [!NOTE]
+> During installation, you may be asked to allow the `x00/ntfy-php` plugin. This is required to automatically generate the configuration file.
 
 ## Configuration
 
-### Symfony
+The library now supports **zero-configuration** for Symfony projects.
 
-Create a configuration file `config/packages/ntfy.yaml`:
+### Automatic Setup (Symfony)
+
+Upon installation, a default configuration file is automatically created at `config/packages/ntfy.yaml`. You just need to update it with your channel IDs:
 
 ```yaml
 ntfy:
@@ -23,6 +27,13 @@ ntfy:
         error: 'your-error-channel-id'
         log: 'your-log-channel-id'
 ```
+
+### Environment Variables
+
+Alternatively, you can use environment variables without any configuration file:
+
+- `NTFY_ERROR_CHANNEL`
+- `NTFY_LOG_CHANNEL`
 
 ### Manual Instantiation
 
