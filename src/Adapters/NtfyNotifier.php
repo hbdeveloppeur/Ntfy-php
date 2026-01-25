@@ -56,7 +56,13 @@ class NtfyNotifier implements Notifier
         if ($exception !== null) {
             $message .= "\n\nException: " . $exception->getMessage();
             $message .= "\nFile: " . $exception->getFile() . ":" . $exception->getLine();
-            $message .= "\nStack Trace:\n" . $exception->getTraceAsString();
+
+            // Limit trace to 6 lines
+            $trace = $exception->getTraceAsString();
+            $lines = explode("\n", $trace);
+            $limitedTrace = implode("\n", array_slice($lines, 0, 6));
+
+            $message .= "\nStack Trace:\n" . $limitedTrace;
         }
 
         if (!empty($data)) {
