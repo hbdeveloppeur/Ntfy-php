@@ -114,29 +114,34 @@ class Client implements Ntfy
     /**
      * Send an urgent notification.
      *
-     * @param string $message The urgent message content.
+     * @param \Throwable|null $exception The exception/urgent issue that occurred.
      * @param array $data     Additional data to append to the message.
      *
      * @throws NotificationException
      */
-    public function urgent(string $message, array $data = []): void
+    public function urgent(?\Throwable $exception = null, array $data = []): void
     {
+        $message = "Urgent";
         if (!empty($this->actionDescription)) {
-            $message = "Urgent: " . $this->actionDescription . "\n" . $message;
-        } else {
-            $message = "Urgent: " . $message;
+            $message .= " action: " . $this->actionDescription;
+        }
+
+        if ($exception !== null) {
+            $message .= "\n\nException: " . $exception->getMessage();
+            $message .= "\nFile: " . $exception->getFile() . ":" . $exception->getLine();
+
+            // Limit trace to 6 lines
+            $trace = $exception->getTraceAsString();
+            $lines = explode("\n", $trace);
+            $limitedTrace = implode("\n", array_slice($lines, 0, 6));
+
+            $message .= "\nStack Trace:\n" . $limitedTrace;
         }
 
         if (!empty($data)) {
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
-        // High priority headers for urgent messages could be added here if Ntfy supports it via headers, 
-        // but for now we just send to the urgent channel.
-        // Ntfy.sh supports Priority header: 5 (max) or 'urgent'. 
-        // We will assume the channel itself is enough, but strictly the request asked for a function with a new channel.
-        // However, to make it truly "urgent" in Ntfy terms, we might want to add headers later, but the plan only specified a channel.
-        
         $this->sendToNtfy($this->urgentChannel, $message);
     }
 

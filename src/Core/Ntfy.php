@@ -38,12 +38,12 @@ interface Ntfy
     /**
      * Send an urgent notification.
      *
-     * @param string $message The urgent message content.
+     * @param \Throwable|null $exception The exception/urgent issue that occurred.
      * @param array $data     Additional data to append to the message.
      *
      * @return void
      *
      * @throws NotificationException If the notification fails to send.
      */
-    public function urgent(string $message, array $data = []): void;
+    public function urgent(?\Throwable $exception = null, array $data = []): void;
 }

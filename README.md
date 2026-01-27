@@ -17,7 +17,7 @@ composer require x00/ntfy-php
 
 The library now supports **zero-configuration** for Symfony projects.
 
-### Automatic Setup (Symfony)
+### Automatic Notifications Channels (Symfony)
 
 Upon installation, a default configuration file is automatically created at `config/packages/ntfy.yaml`. You just need to update it with your channel IDs:
 
@@ -30,7 +30,9 @@ ntfy:
         log: 
             id: 'your-log-channel-id'
             dev_only: true # Optional: Only send in 'dev' environment
-        urgent: 'your-urgent-channel-id'
+        urgent:
+            id: 'your-urgent-channel-id'
+            dev_only: false
 ```
 
 ### Environment Variables
@@ -39,6 +41,7 @@ Alternatively, you can use environment variables without any configuration file:
 
 - `NTFY_ERROR_CHANNEL`
 - `NTFY_LOG_CHANNEL`
+- `NTFY_URGENT_CHANNEL`
 
 ## Usage
 
@@ -57,18 +60,16 @@ class MyService
 
     public function doSomething()
     {
-        $this->notifier->send('Something happened', ['key' => 'value']);
+        // Send to log channel
         $this->notifier->send('Something else happened');
+
+        // Send with data
+        $this->notifier->send('Something happened', null, ['key' => 'value']);
+
+        // Send to specific channel
+        $this->notifier->send('Something happened', 'my-custom-channel-id', ['key' => 'value']);
     }
 }
-```
-
-### Sending to specific Channel
-
-You can also send a notification to a specific channel:
-
-```php
-$this->notifier->send('Message to custom channel', 'my-custom-channel-id', ['key' => 'value']);
 ```
 
 ### Exception Notifications
@@ -76,26 +77,15 @@ $this->notifier->send('Message to custom channel', 'my-custom-channel-id', ['key
 ```php
 try {
     // ...
-} catch (\Exception $e) {
-    $this->notifier->exception(
-        exception: $e,
-        data: ['user_id' => 123, 'context' => 'foo']
-    );
+} catch (\Throwable $e) {
+    $this->notifier->exception($e, ['user_id' => 123, 'context' => 'foo']);
 }
+```
 
 ### Urgent Notifications
 
 ```php
-$this->notifier->urgent('Server is down!');
-```
-```
-
-### Contextual Action
-
-You can set a context action name that will be used for subsequent notifications:
-
-```php
-$this->notifier->startNewAction('User Registration');
+$this->notifier->urgent(new \Exception('Server is down!'));
 ```
 
 ## License
