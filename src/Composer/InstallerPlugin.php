@@ -93,7 +93,15 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         $content = file_get_contents($bundlesFile);
+
+        // Fix legacy namespace if present
         if (strpos($content, 'Notify\NtfyBundle') !== false) {
+            $content = str_replace('Notify\NtfyBundle', 'Ntfy\NtfyBundle', $content);
+            file_put_contents($bundlesFile, $content);
+            $this->io->write('<info>[Ntfy]</info> Fixed legacy namespace in <comment>config/bundles.php</comment>');
+        }
+
+        if (strpos($content, 'Ntfy\NtfyBundle') !== false) {
             return;
         }
 
