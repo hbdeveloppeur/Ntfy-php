@@ -1,6 +1,6 @@
 {
     "name": "x00/ntfy-php",
-    "description": "Simple clean-architecture library for notifying via ntfy.sh",
+    "description": "Send notifications to your phone in one line via Ntfy.sh for Symfony",
     "type": "composer-plugin",
     "license": "Apache-2.0",
     "autoload": {
