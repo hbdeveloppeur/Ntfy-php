@@ -49,15 +49,7 @@ $notifier = new NtfyNotifier('your-error-channel-id', 'your-log-channel-id');
 
 Use the `Notify\Core\Notifier` interface to send notifications.
 
-### Contextual Action
-
-You can set a context action name that will be used for subsequent notifications:
-
-```php
-$this->notifier->startNewAction('User Registration');
-```
-
-### Exception Notifications
+### Log Notifications
 
 ```php
 use Notify\Core\Notifier;
@@ -70,22 +62,31 @@ class MyService
 
     public function doSomething()
     {
-        try {
-            // ...
-        } catch (\Exception $e) {
-            $this->notifier->exception(
-                exception: $e,
-                data: ['user_id' => 123, 'context' => 'foo']
-            );
-        }
+        $this->notifier->log('Something happened', ['key' => 'value']);
+        $this->notifier->log('Something else happened');
     }
 }
 ```
 
-### Log Notifications
+### Exception Notifications
 
 ```php
-$this->notifier->log('Something happened', ['key' => 'value']);
+try {
+    // ...
+} catch (\Exception $e) {
+    $this->notifier->exception(
+        exception: $e,
+        data: ['user_id' => 123, 'context' => 'foo']
+    );
+}
+```
+
+### Contextual Action
+
+You can set a context action name that will be used for subsequent notifications:
+
+```php
+$this->notifier->startNewAction('User Registration');
 ```
 
 ## License

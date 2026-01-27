@@ -23,7 +23,7 @@ class NtfyNotifier implements Notifier
     private string $errorChannelId;
     private string $logChannelId;
 
-    private string $actionDescription;
+    private string $actionDescription = '';
 
 
     public function startNewAction(string $description): void
@@ -51,7 +51,10 @@ class NtfyNotifier implements Notifier
      */
     public function exception( ?\Throwable $exception = null, array $data = []): void
     {
-        $message = "Error while doing action: " . $this->actionDescription;
+        $message = "Error";
+        if (!empty($this->actionDescription)) {
+            $message .= " while doing action: " . $this->actionDescription;
+        }
 
         if ($exception !== null) {
             $message .= "\n\nException: " . $exception->getMessage();
@@ -82,7 +85,11 @@ class NtfyNotifier implements Notifier
      */
     public function log(string $message, array $data = []): void
     {
-        $message = "Log: " . $this->actionDescription . "\n" . $message;
+        if (!empty($this->actionDescription)) {
+            $message = "Log: " . $this->actionDescription . "\n" . $message;
+        } else {
+            $message = "Log: " . $message;
+        }
 
         if (!empty($data)) {
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
