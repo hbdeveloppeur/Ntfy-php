@@ -61,13 +61,13 @@ class MyService
     public function doSomething()
     {
         // Send to log channel
-        $this->notifier->send('Something else happened');
+        $this->notifier->send(message: 'Something else happened');
 
         // Send with data
-        $this->notifier->send('Something happened', null, ['key' => 'value']);
+        $this->notifier->send(message: 'Something happened', data: ['key' => 'value']);
 
         // Send to specific channel
-        $this->notifier->send('Something happened', 'my-custom-channel-id', ['key' => 'value']);
+        $this->notifier->send(message: 'Something happened', channelId: 'my-custom-channel-id', data: ['key' => 'value']);
     }
 }
 ```
