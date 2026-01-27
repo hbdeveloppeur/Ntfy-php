@@ -1,6 +1,6 @@
 <?php
 
-namespace Notify\DependencyInjection;
+namespace Ntfy\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -16,8 +16,36 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('channels')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('error')->defaultValue('%env(NTFY_ERROR_CHANNEL)%')->end()
-                        ->scalarNode('log')->defaultValue('%env(NTFY_LOG_CHANNEL)%')->end()
+                        ->arrayNode('error')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(fn ($v) => ['id' => $v])
+                            ->end()
+                            ->children()
+                                ->scalarNode('id')->defaultValue('%env(NTFY_ERROR_CHANNEL)%')->end()
+                                ->booleanNode('dev_only')->defaultFalse()->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('log')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(fn ($v) => ['id' => $v])
+                            ->end()
+                            ->children()
+                                ->scalarNode('id')->defaultValue('%env(NTFY_LOG_CHANNEL)%')->end()
+                                ->booleanNode('dev_only')->defaultFalse()->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('urgent')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(fn ($v) => ['id' => $v])
+                            ->end()
+                            ->children()
+                                ->scalarNode('id')->defaultValue('%env(NTFY_URGENT_CHANNEL)%')->end()
+                                ->booleanNode('dev_only')->defaultFalse()->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end()

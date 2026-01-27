@@ -1,6 +1,6 @@
 <?php
 
-namespace Notify;
+namespace Ntfy;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

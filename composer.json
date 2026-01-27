@@ -5,7 +5,7 @@
     "license": "Apache-2.0",
     "autoload": {
         "psr-4": {
-            "Notify\\": "src/"
+            "Ntfy\\": "src/"
         }
     },
     "require": {
@@ -18,6 +18,6 @@
         "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
     },
     "extra": {
-        "class": "Notify\\Composer\\InstallerPlugin"
+        "class": "Ntfy\\Composer\\InstallerPlugin"
     }
 }

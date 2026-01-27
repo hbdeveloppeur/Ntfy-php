@@ -1,7 +1,7 @@
 services:
-    Notify\Adapters\NtfyNotifier:
+    Ntfy\Adapters\Client:
         autowire: true
         autoconfigure: true
 
-    Notify\Core\Notifier:
-        alias: Notify\Adapters\NtfyNotifier
+    Ntfy\Core\Ntfy:
+        alias: Ntfy\Adapters\Client

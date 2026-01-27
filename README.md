@@ -24,8 +24,13 @@ Upon installation, a default configuration file is automatically created at `con
 ```yaml
 ntfy:
     channels:
-        error: 'your-error-channel-id'
-        log: 'your-log-channel-id'
+        error: 
+            id: 'your-error-channel-id'
+            dev_only: true
+        log: 
+            id: 'your-log-channel-id'
+            dev_only: true # Optional: Only send in 'dev' environment
+        urgent: 'your-urgent-channel-id'
 ```
 
 ### Environment Variables
@@ -35,37 +40,35 @@ Alternatively, you can use environment variables without any configuration file:
 - `NTFY_ERROR_CHANNEL`
 - `NTFY_LOG_CHANNEL`
 
-### Manual Instantiation
-
-If you are not using Symfony, you can instantiate the notifier directly:
-
-```php
-use Notify\Adapters\NtfyNotifier;
-
-$notifier = new NtfyNotifier('your-error-channel-id', 'your-log-channel-id');
-```
-
 ## Usage
 
-Use the `Notify\Core\Notifier` interface to send notifications.
+Use the `Ntfy\Core\Ntfy` interface to send notifications.
 
-### Log Notifications
+### Regular Notifications
 
 ```php
-use Notify\Core\Notifier;
+use Ntfy\Core\Ntfy;
 
 class MyService
 {
     public function __construct(
-        private Notifier $notifier
+        private Ntfy $notifier
     ) {}
 
     public function doSomething()
     {
-        $this->notifier->log('Something happened', ['key' => 'value']);
-        $this->notifier->log('Something else happened');
+        $this->notifier->send('Something happened', ['key' => 'value']);
+        $this->notifier->send('Something else happened');
     }
 }
+```
+
+### Sending to specific Channel
+
+You can also send a notification to a specific channel:
+
+```php
+$this->notifier->send('Message to custom channel', 'my-custom-channel-id', ['key' => 'value']);
 ```
 
 ### Exception Notifications
@@ -79,6 +82,12 @@ try {
         data: ['user_id' => 123, 'context' => 'foo']
     );
 }
+
+### Urgent Notifications
+
+```php
+$this->notifier->urgent('Server is down!');
+```
 ```
 
 ### Contextual Action

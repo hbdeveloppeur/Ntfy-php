@@ -1,6 +1,6 @@
 <?php
 
-namespace Notify\DependencyInjection;
+namespace Ntfy\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -25,8 +25,14 @@ class NtfyExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $definition = $container->getDefinition('Notify\Adapters\NtfyNotifier');
-        $definition->setArgument('$errorChannelId', $config['channels']['error'] ?? '%env(NTFY_ERROR_CHANNEL)%');
-        $definition->setArgument('$logChannelId', $config['channels']['log'] ?? '%env(NTFY_LOG_CHANNEL)%');
+        $definition = $container->getDefinition('Ntfy\Adapters\Client');
+        
+        // Pass full configuration arrays
+        $definition->setArgument('$errorChannel', $config['channels']['error']);
+        $definition->setArgument('$logChannel', $config['channels']['log']);
+        $definition->setArgument('$urgentChannel', $config['channels']['urgent']);
+        
+        // Pass the environment
+        $definition->setArgument('$environment', '%kernel.environment%');
     }
 }

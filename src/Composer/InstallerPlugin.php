@@ -1,6 +1,6 @@
 <?php
 
-namespace Notify\Composer;
+namespace Ntfy\Composer;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -65,22 +65,22 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         if (file_exists($targetFile)) {
-            $this->io->write('<info>[Notify]</info> Configuration file ntfy.yaml already exists.');
+            $this->io->write('<info>[Ntfy]</info> Configuration file ntfy.yaml already exists.');
             return;
         }
 
         $sourceFile = __DIR__ . '/../../config/ntfy.yaml';
         
         if (!file_exists($sourceFile)) {
-            $this->io->write('<error>[Notify]</error> Source configuration file not found.');
+            $this->io->write('<error>[Ntfy]</error> Source configuration file not found.');
             return;
         }
 
         if (copy($sourceFile, $targetFile)) {
-            $this->io->write('<info>[Notify]</info> Created default configuration at <comment>config/packages/ntfy.yaml</comment>');
-            $this->io->write('<info>[Notify]</info> Please update your channel IDs in that file.');
+            $this->io->write('<info>[Ntfy]</info> Created default configuration at <comment>config/packages/ntfy.yaml</comment>');
+            $this->io->write('<info>[Ntfy]</info> Please update your channel IDs in that file.');
         } else {
-            $this->io->write('<error>[Notify]</error> Failed to create configuration file.');
+            $this->io->write('<error>[Ntfy]</error> Failed to create configuration file.');
         }
     }
 
@@ -97,14 +97,14 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        $newBundle = "    Notify\NtfyBundle::class => ['all' => true],\n";
+        $newBundle = "    Ntfy\NtfyBundle::class => ['all' => true],\n";
         
         // Find the last occurrence of ];
         $pos = strrpos($content, '];');
         if ($pos !== false) {
             $newContent = substr($content, 0, $pos) . $newBundle . substr($content, $pos);
             if (file_put_contents($bundlesFile, $newContent)) {
-                $this->io->write('<info>[Notify]</info> Registered NtfyBundle in <comment>config/bundles.php</comment>');
+                $this->io->write('<info>[Ntfy]</info> Registered NtfyBundle in <comment>config/bundles.php</comment>');
             }
         }
     }

@@ -2,8 +2,8 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Notify\Adapters\NtfyNotifier;
-use Notify\Core\Exception\NotificationException;
+use Ntfy\Adapters\Client;
+use Ntfy\Core\Exception\NotificationException;
 
 try {
     // Replace 'test_channel' with your actual ntfy.sh channel
@@ -13,10 +13,10 @@ try {
     echo "Error Channel: $errorChannel\n";
     echo "Log Channel: $logChannel\n";
 
-    $notifier = new NtfyNotifier($errorChannel, $logChannel);
+    $notifier = new Client($errorChannel, $logChannel, $logChannel);
 
-    $notifier->log('This is a log message from Notify Library.');
-    $notifier->error('This is an error message from Notify Library.');
+    $notifier->send('This is a log message from Notify Library.');
+    $notifier->exception(new \Exception('This is an error message from Notify Library.'));
     
     echo "Notifications sent successfully!\n";
     echo "Check https://ntfy.sh/$errorChannel\n";

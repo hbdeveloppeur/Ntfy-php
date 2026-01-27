@@ -1,6 +1,6 @@
 <?php
 
-namespace Notify\Core\Exception;
+namespace Ntfy\Core\Exception;
 
 /**
  * Exception thrown when a notification fails to send or is invalid.

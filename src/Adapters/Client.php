@@ -1,14 +1,14 @@
 <?php
 
-namespace Notify\Adapters;
+namespace Ntfy\Adapters;
 
-use Notify\Core\Exception\NotificationException;
-use Notify\Core\Notifier;
+use Ntfy\Core\Exception\NotificationException;
+use Ntfy\Core\Ntfy;
 
 /**
  * Adapter for sending notifications via ntfy.sh.
  */
-class NtfyNotifier implements Notifier
+class Client implements Ntfy
 {
     /**
      * Send a notification message to a channel.
@@ -20,8 +20,14 @@ class NtfyNotifier implements Notifier
      *
      * @throws NotificationException If the notification fails (curl error or non-200 response).
      */
-    private string $errorChannelId;
-    private string $logChannelId;
+    /** @var array{id: string, dev_only: bool} */
+    private array $errorChannel;
+    /** @var array{id: string, dev_only: bool} */
+    private array $logChannel;
+    /** @var array{id: string, dev_only: bool} */
+    private array $urgentChannel;
+    
+    private string $environment;
 
     private string $actionDescription = '';
 
@@ -32,13 +38,17 @@ class NtfyNotifier implements Notifier
     }
 
     /**
-     * @param string $errorChannelId The channel ID for error notifications.
-     * @param string $logChannelId   The channel ID for log notifications.
+     * @param array{id: string, dev_only: bool} $errorChannel
+     * @param array{id: string, dev_only: bool} $logChannel
+     * @param array{id: string, dev_only: bool} $urgentChannel
+     * @param string $environment
      */
-    public function __construct(string $errorChannelId, string $logChannelId)
+    public function __construct(array $errorChannel, array $logChannel, array $urgentChannel, string $environment = 'prod')
     {
-        $this->errorChannelId = $errorChannelId;
-        $this->logChannelId = $logChannelId;
+        $this->errorChannel = $errorChannel;
+        $this->logChannel = $logChannel;
+        $this->urgentChannel = $urgentChannel;
+        $this->environment = $environment;
     }
 
     /**
@@ -72,42 +82,78 @@ class NtfyNotifier implements Notifier
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
-        $this->send($this->errorChannelId, $message);
+        $this->sendToNtfy($this->errorChannel, $message);
     }
 
     /**
-     * Send a log notification.
+     * Send a regular notification.
      *
-     * @param string $message The log message content.
-     * @param array $data     Additional data to append to the message.
+     * @param string $message   The message content.
+     * @param array $data       Additional data to append to the message.
+     * @param string|null $channelId Optional channel ID to send to. Defaults to the configured log channel.
      *
      * @throws NotificationException
      */
-    public function log(string $message, array $data = []): void
+    public function send(string $message, ?string $channelId = null, array $data = []): void
     {
         if (!empty($this->actionDescription)) {
-            $message = "Log: " . $this->actionDescription . "\n" . $message;
-        } else {
-            $message = "Log: " . $message;
+            $message = "Action: " . $this->actionDescription . "\n" . $message;
         }
 
         if (!empty($data)) {
             $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
-        $this->send($this->logChannelId, $message);
+        $targetChannel = $channelId 
+            ? ['id' => $channelId, 'dev_only' => false] 
+            : $this->logChannel;
+            
+        $this->sendToNtfy($targetChannel, $message);
+    }
+
+    /**
+     * Send an urgent notification.
+     *
+     * @param string $message The urgent message content.
+     * @param array $data     Additional data to append to the message.
+     *
+     * @throws NotificationException
+     */
+    public function urgent(string $message, array $data = []): void
+    {
+        if (!empty($this->actionDescription)) {
+            $message = "Urgent: " . $this->actionDescription . "\n" . $message;
+        } else {
+            $message = "Urgent: " . $message;
+        }
+
+        if (!empty($data)) {
+            $message .= "\n\nData:\n" . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        // High priority headers for urgent messages could be added here if Ntfy supports it via headers, 
+        // but for now we just send to the urgent channel.
+        // Ntfy.sh supports Priority header: 5 (max) or 'urgent'. 
+        // We will assume the channel itself is enough, but strictly the request asked for a function with a new channel.
+        // However, to make it truly "urgent" in Ntfy terms, we might want to add headers later, but the plan only specified a channel.
+        
+        $this->sendToNtfy($this->urgentChannel, $message);
     }
 
     /**
      * Internal helper to send the notification via cURL.
      *
-     * @param string $channelId
+     * @param array{id: string, dev_only: bool} $channel
      * @param string $message
      * @throws NotificationException
      */
-    private function send(string $channelId, string $message): void
+    private function sendToNtfy(array $channel, string $message): void
     {
-        $url = "https://ntfy.sh/" . urlencode($channelId);
+        if ($channel['dev_only'] && $this->environment !== 'dev') {
+            return;
+        }
+
+        $url = "https://ntfy.sh/" . urlencode($channel['id']);
         $ch = curl_init($url);
 
         if ($ch === false) {

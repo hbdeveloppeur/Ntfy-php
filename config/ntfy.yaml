@@ -1,4 +1,9 @@
 ntfy:
     channels:
-        error: 'your_error_channel_id'
-        log: 'your_log_channel_id'
+        error: 
+            id: 'your_error_channel_id'
+            dev_only: true
+        log: 
+            id: 'your_log_channel_id'
+            dev_only: true
+        urgent: 'your_urgent_channel_id'
