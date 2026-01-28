@@ -13,6 +13,7 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
+                ->booleanNode('silent')->defaultFalse()->end()
                 ->arrayNode('channels')
                     ->addDefaultsIfNotSet()
                     ->children()

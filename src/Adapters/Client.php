@@ -28,6 +28,7 @@ class Client implements Ntfy
     private array $urgentChannel;
     
     private string $environment;
+    private bool $silent;
 
     private string $actionDescription = '';
 
@@ -42,13 +43,15 @@ class Client implements Ntfy
      * @param array{id: string, dev_only: bool} $logChannel
      * @param array{id: string, dev_only: bool} $urgentChannel
      * @param string $environment
+     * @param bool $silent
      */
-    public function __construct(array $errorChannel, array $logChannel, array $urgentChannel, string $environment = 'prod')
+    public function __construct(array $errorChannel, array $logChannel, array $urgentChannel, string $environment = 'prod', bool $silent = false)
     {
         $this->errorChannel = $errorChannel;
         $this->logChannel = $logChannel;
         $this->urgentChannel = $urgentChannel;
         $this->environment = $environment;
+        $this->silent = $silent;
     }
 
     /**
@@ -161,39 +164,43 @@ class Client implements Ntfy
         $url = "https://ntfy.sh/" . urlencode($channel['id']);
         $ch = curl_init($url);
 
-        if ($ch === false) {
-            throw new NotificationException("Failed to initialize cURL.");
-        }
+        try {
+            if ($ch === false) {
+                throw new NotificationException("Failed to initialize cURL.");
+            }
 
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // Set a timeout to avoid hanging indefinitely
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // Set a timeout to avoid hanging indefinitely
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-        $response = curl_exec($ch);
-        $errno = curl_errno($ch);
-        $error = curl_error($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $response = curl_exec($ch);
+            $errno = curl_errno($ch);
+            $error = curl_error($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        // Always close resources
-        // curl_close() is deprecated in PHP 8.0+ as it has no effect on CurlHandle objects,
-        // but explicit unset or leaving scope handles cleanup in PHP 8+.
-        // For compatibility with older PHP versions (if supported) or just good measure if using resources:
-        if (is_resource($ch)) {
-             curl_close($ch);
-        }
+            if ($errno !== 0) {
+                throw new NotificationException("cURL error ($errno): $error");
+            }
 
-        if ($errno !== 0) {
-            throw new NotificationException("cURL error ($errno): $error");
-        }
+            if ($response === false) {
+                 throw new NotificationException("Failed to execute cURL request.");
+            }
 
-        if ($response === false) {
-             throw new NotificationException("Failed to execute cURL request.");
-        }
-
-        if ($httpCode >= 400) {
-            throw new NotificationException("Failed to send notification. HTTP Status: $httpCode. Response: " . (string)$response);
+            if ($httpCode >= 400) {
+                throw new NotificationException("Failed to send notification. HTTP Status: $httpCode. Response: " . (string)$response);
+            }
+        } catch (NotificationException $e) {
+            if (!$this->silent) {
+                throw $e;
+            }
+            // In silent mode, we swallow the exception
+        } finally {
+            // Always close resources
+            if (is_resource($ch)) {
+                 curl_close($ch);
+            }
         }
     }
 }

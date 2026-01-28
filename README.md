@@ -23,6 +23,7 @@ Upon installation, a default configuration file is automatically created at `con
 
 ```yaml
 ntfy:
+    silent: false # Optional: If true, swallows exceptions on failure. Default: false
     channels:
         error: 
             id: 'your-error-channel-id'
@@ -61,7 +62,7 @@ class MyService
     public function doSomething()
     {
         // Send to log channel
-        $this->notifier->send(message: 'Something else happened');
+        $this->notifier->send(message: 'Something happened');
 
         // Send with data
         $this->notifier->send(message: 'Something happened', data: ['key' => 'value']);

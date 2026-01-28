@@ -34,5 +34,8 @@ class NtfyExtension extends Extension
         
         // Pass the environment
         $definition->setArgument('$environment', '%kernel.environment%');
+        
+        // Pass the silent option
+        $definition->setArgument('$silent', $config['silent']);
     }
 }
